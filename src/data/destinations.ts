@@ -51,4 +51,18 @@ export interface Destination {
  * (ex. `budget: 2` devient `number`, `kind: "island"` devient `string`). On affirme
  * donc que le contenu respecte l'interface `Destination` : à vérifier à l'œil en éditant le JSON.
  */
-export const destinations = data as Destination[]
+/**
+ * Préfixe un chemin public (ex. `/photos/madere/madere-01.jpg`) par le `base`
+ * de Vite. En local le base vaut `/`, mais sur GitHub Pages il vaut `/escapade/` :
+ * sans ça, les images seraient cherchées à la racine du domaine et renverraient 404.
+ */
+const asset = (path: string): string =>
+  import.meta.env.BASE_URL.replace(/\/$/, '') + path
+
+const withBase = (dest: Destination): Destination => ({
+  ...dest,
+  photo: dest.photo ? asset(dest.photo) : dest.photo,
+  gallery: dest.gallery?.map(asset),
+})
+
+export const destinations = (data as Destination[]).map(withBase)
