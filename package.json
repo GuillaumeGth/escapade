@@ -1,0 +1,25 @@
+{
+  "name": "escapade",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Magazine interactif pour choisir notre prochaine escapade — Madère, Galice, Albanie, Irlande.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "framer-motion": "^11.15.0",
+    "lenis": "^1.1.18",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}
