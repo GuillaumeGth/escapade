@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import Lenis from 'lenis'
+import { registerLenis } from '../lib/scroll'
 
 /**
  * Active le scroll fluide global (Lenis) et synchronise sa boucle avec
@@ -17,6 +18,8 @@ export function useSmoothScroll(): void {
       smoothWheel: true,
     })
 
+    registerLenis(lenis)
+
     let frame = 0
     const raf = (time: number) => {
       lenis.raf(time)
@@ -26,6 +29,7 @@ export function useSmoothScroll(): void {
 
     return () => {
       cancelAnimationFrame(frame)
+      registerLenis(null)
       lenis.destroy()
     }
   }, [])

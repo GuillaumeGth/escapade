@@ -1,6 +1,10 @@
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { destinations } from '../data/destinations'
 import Reveal from './Reveal'
+import MaskReveal from './MaskReveal'
+import AnimatedNumber from './AnimatedNumber'
+import { haptic } from '../lib/haptics'
 
 interface Props {
   favorites: Set<string>
@@ -51,15 +55,25 @@ export default function DecisionBoard({ favorites, winner, onPick }: Props) {
         <Reveal>
           <p className="eyebrow board__eyebrow">À vous de jouer</p>
         </Reveal>
-        <Reveal delay={0.08}>
-          <h2 className="board__title">
-            On part <em>où</em> ?
-          </h2>
-        </Reveal>
+        <h2 className="board__title">
+          <MaskReveal>On part</MaskReveal>
+          <MaskReveal delay={0.08} className="board__title-em">
+            <em>où</em>&nbsp;?
+          </MaskReveal>
+        </h2>
         <Reveal delay={0.14}>
           <p className="board__sub">
             Vos coups de cœur remontent en haut. Touchez une carte pour désigner la grande gagnante — le choix
             reste enregistré sur cet appareil.
+          </p>
+        </Reveal>
+
+        <Reveal delay={0.18}>
+          <p className="board__tally" aria-live="polite">
+            <span className="board__tally-num">
+              <AnimatedNumber value={favorites.size} />
+            </span>
+            {favorites.size > 1 ? ' coups de cœur' : ' coup de cœur'} sur {destinations.length}
           </p>
         </Reveal>
 
@@ -69,20 +83,23 @@ export default function DecisionBoard({ favorites, winner, onPick }: Props) {
             const isLoved = favorites.has(d.id)
             return (
               <Reveal key={d.id} delay={0.05 * i}>
-                <button
+                <motion.button
                   type="button"
                   className={`ballot${isWinner ? ' win' : ''}`}
                   onClick={() => {
+                    haptic([12, 40, 18])
                     onPick(d.id)
                     openWhatsApp(d.name)
                   }}
                   aria-pressed={isWinner}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: 'spring', stiffness: 480, damping: 30 }}
                 >
                   <span className="ballot__rank">{String(i + 1).padStart(2, '0')}</span>
                   <span className="ballot__name">{d.name}</span>
                   {isLoved ? <span className="ballot__loved">♥ coup de cœur</span> : null}
                   <span className="ballot__pick">{isWinner ? 'On y va !' : 'Choisir'}</span>
-                </button>
+                </motion.button>
               </Reveal>
             )
           })}

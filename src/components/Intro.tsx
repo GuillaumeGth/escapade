@@ -1,7 +1,9 @@
 import Reveal from './Reveal'
+import { destinations } from '../data/destinations'
+import { countWord } from '../lib/numbers'
 
 /**
- * Section d'ouverture : pose le cadre du choix (court séjour, quatre options).
+ * Section d'ouverture : pose le cadre du choix (court séjour, destinations finalistes).
  */
 export default function Intro() {
   return (
@@ -31,7 +33,7 @@ export default function Intro() {
         <Reveal delay={0.19}>
           <div>
             <dt>Finalistes</dt>
-            <dd>Quatre</dd>
+            <dd>{countWord(destinations.length)}</dd>
           </div>
         </Reveal>
       </dl>

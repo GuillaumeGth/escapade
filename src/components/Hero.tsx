@@ -1,25 +1,34 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useSpring, useTransform, useReducedMotion } from 'framer-motion'
+import MaskReveal from './MaskReveal'
+import { destinations } from '../data/destinations'
+import { countWord } from '../lib/numbers'
 
 /**
  * En-tête plein écran avec parallax : le soleil, la crête et le titre se
- * déplacent à des vitesses différentes au scroll pour créer la profondeur.
+ * déplacent à des vitesses différentes au scroll. Le progrès est lissé par un
+ * ressort (mouvement « beurré ») et le titre se révèle au masque, ligne à ligne.
  */
 export default function Hero() {
   const ref = useRef<HTMLElement>(null)
+  const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ['start start', 'end start'],
   })
 
-  const sunY = useTransform(scrollYProgress, [0, 1], ['0%', '38%'])
-  const sunScale = useTransform(scrollYProgress, [0, 1], [1, 1.25])
-  const ridgeY = useTransform(scrollYProgress, [0, 1], ['0%', '-16%'])
-  const titleY = useTransform(scrollYProgress, [0, 1], ['0%', '-40%'])
+  // Ressort doux par-dessus le progrès brut → parallax fluide, sans à-coups.
+  const spring = useSpring(scrollYProgress, { stiffness: 90, damping: 30, mass: 0.35 })
+  const p = reduce ? scrollYProgress : spring
+
+  const sunY = useTransform(p, [0, 1], ['0%', '42%'])
+  const sunScale = useTransform(p, [0, 1], [1, 1.3])
+  const ridgeY = useTransform(p, [0, 1], ['0%', '-18%'])
+  const titleY = useTransform(p, [0, 1], ['0%', '-44%'])
   const titleOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0])
 
   return (
-    <header className="hero" ref={ref}>
+    <header className="hero" id="top" ref={ref}>
       <motion.div className="hero__sun" style={{ y: sunY, scale: sunScale }} />
 
       <motion.div className="hero__ridge" style={{ y: ridgeY }}>
@@ -42,38 +51,28 @@ export default function Hero() {
         </motion.p>
 
         <h1 className="hero__title">
-          <motion.span
-            style={{ display: 'block' }}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <MaskReveal trigger="mount" delay={0.18}>
             Notre prochaine
-          </motion.span>
-          <motion.em
-            style={{ display: 'block' }}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.32, ease: [0.22, 1, 0.36, 1] }}
-          >
-            escapade
-          </motion.em>
+          </MaskReveal>
+          <MaskReveal trigger="mount" delay={0.34} className="hero__title-em">
+            <em>escapade</em>
+          </MaskReveal>
         </h1>
 
         <motion.p
           className="hero__sub"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.55 }}
         >
-          Quatre directions, une décision à prendre ensemble. Faites défiler, ouvrez les coups de cœur, tranchez.
+          {countWord(destinations.length)} directions, une décision à prendre ensemble. Faites défiler, ouvrez les coups de cœur, tranchez.
         </motion.p>
 
         <motion.div
           className="hero__cue"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.8 }}
+          transition={{ duration: 0.8, delay: 0.85 }}
         >
           <span className="dot" />
           Faire défiler

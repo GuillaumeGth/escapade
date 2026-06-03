@@ -1,9 +1,11 @@
 import { useRef } from 'react'
-import { motion, useScroll, useTransform } from 'framer-motion'
+import { motion, useScroll, useSpring, useTransform, useReducedMotion } from 'framer-motion'
 import type { Destination } from '../data/destinations'
 import SceneArt from './SceneArt'
 import Reveal from './Reveal'
+import MaskReveal from './MaskReveal'
 import Gallery from './Gallery'
+import { haptic } from '../lib/haptics'
 
 interface Props {
   dest: Destination
@@ -24,30 +26,46 @@ function Heart({ filled }: { filled: boolean }) {
 
 export default function DestinationSection({ dest, index, loved, onToggleLove }: Props) {
   const mediaRef = useRef<HTMLDivElement>(null)
+  const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: mediaRef,
     offset: ['start end', 'end start'],
   })
-  const sceneY = useTransform(scrollYProgress, [0, 1], ['-9%', '9%'])
+  const spring = useSpring(scrollYProgress, { stiffness: 80, damping: 28, mass: 0.4 })
+  const p = reduce ? scrollYProgress : spring
+  const sceneY = useTransform(p, [0, 1], ['-11%', '11%'])
+  const sceneScale = useTransform(p, [0, 0.5, 1], [1.06, 1, 1.06])
 
   const flip = index % 2 === 1
   const num = String(index + 1).padStart(2, '0')
 
+  const onToggle = () => {
+    haptic(loved ? 8 : [10, 30, 14])
+    onToggleLove(dest.id)
+  }
+
   return (
     <section className={`dest${flip ? ' dest--flip' : ''}`} id={dest.id}>
       <div className="shell dest__grid">
-        {/* Visuel parallax */}
-        <div className="dest__media" ref={mediaRef}>
-          <motion.div style={{ y: sceneY }} className="dest__scene">
+        {/* Visuel parallax — révélé par un volet qui se lève au scroll */}
+        <motion.div
+          className="dest__media"
+          ref={mediaRef}
+          initial={reduce ? { opacity: 0 } : { opacity: 0, y: 36, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '0px 0px -12% 0px' }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <motion.div style={{ y: sceneY, scale: sceneScale }} className="dest__scene">
             <SceneArt scene={dest.scene} />
           </motion.div>
           {dest.photo ? (
-            <img
+            <motion.img
               src={dest.photo}
               alt={dest.name}
               loading="lazy"
               className="dest__scene"
-              style={{ objectFit: 'cover', zIndex: 1 }}
+              style={{ objectFit: 'cover', zIndex: 1, y: sceneY, scale: sceneScale }}
             />
           ) : null}
           <div className="dest__media-grain" />
@@ -56,13 +74,11 @@ export default function DestinationSection({ dest, index, loved, onToggleLove }:
             <div className="dest__country">{dest.country}</div>
             <div className="dest__name">{dest.name}</div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Contenu */}
         <div className="dest__body">
-          <Reveal>
-            <p className="dest__tagline">{dest.tagline}</p>
-          </Reveal>
+          <MaskReveal className="dest__tagline">{dest.tagline}</MaskReveal>
           <Reveal delay={0.06}>
             <p className="dest__intro">{dest.intro}</p>
           </Reveal>
@@ -140,15 +156,17 @@ export default function DestinationSection({ dest, index, loved, onToggleLove }:
           ) : null}
 
           <Reveal>
-            <button
+            <motion.button
               type="button"
               className={`fav${loved ? ' on' : ''}`}
-              onClick={() => onToggleLove(dest.id)}
+              onClick={onToggle}
               aria-pressed={loved}
+              whileTap={{ scale: 0.94 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 28 }}
             >
               <Heart filled={loved} />
               {loved ? 'Coup de cœur ajouté' : 'Ajouter aux coups de cœur'}
-            </button>
+            </motion.button>
           </Reveal>
         </div>
       </div>

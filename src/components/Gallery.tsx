@@ -99,6 +99,15 @@ export default function Gallery({ images, name }: Props) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
+              drag
+              dragSnapToOrigin
+              dragElastic={0.5}
+              dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 130) close()
+                else if (info.offset.x < -90) step(1)
+                else if (info.offset.x > 90) step(-1)
+              }}
             />
             <button
               type="button"
@@ -113,6 +122,7 @@ export default function Gallery({ images, name }: Props) {
             </button>
             <span className="lightbox__count">
               {active + 1} / {images.length}
+              <span className="lightbox__hint">Glissez ← → · vers le bas pour fermer</span>
             </span>
           </motion.div>
         )}
