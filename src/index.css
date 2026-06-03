@@ -579,6 +579,129 @@ a {
 }
 
 /* ============================================================
+   GALLERY (mosaïque + lightbox)
+   ============================================================ */
+.gallery {
+  margin-top: 2.6rem;
+}
+.gallery__grid {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: dense;
+  gap: 0.6rem;
+}
+.gallery__item {
+  min-width: 0;
+}
+.gallery__item--wide {
+  grid-column: span 2;
+}
+.gallery__cell {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--paper-deep);
+  aspect-ratio: 4 / 3;
+  box-shadow: var(--shadow-soft);
+  -webkit-tap-highlight-color: transparent;
+}
+.gallery__item--wide .gallery__cell {
+  aspect-ratio: 16 / 9;
+}
+.gallery__cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.gallery__cell:hover img,
+.gallery__cell:focus-visible img {
+  transform: scale(1.06);
+}
+
+/* lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(20, 12, 6, 0.93);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.lightbox__img {
+  max-width: min(94vw, 1400px);
+  max-height: 84vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 30px 90px -30px rgba(0, 0, 0, 0.85);
+}
+.lightbox__close,
+.lightbox__nav {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid rgba(247, 238, 221, 0.4);
+  background: rgba(20, 12, 6, 0.35);
+  color: var(--paper);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.lightbox__close:hover,
+.lightbox__nav:hover {
+  background: var(--clay);
+  transform: scale(1.06);
+}
+.lightbox__close {
+  top: 1rem;
+  right: 1.1rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  font-size: 1rem;
+}
+.lightbox__nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 1;
+  padding-bottom: 0.25rem;
+}
+.lightbox__nav:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+.lightbox__nav--prev {
+  left: clamp(0.6rem, 3vw, 2rem);
+}
+.lightbox__nav--next {
+  right: clamp(0.6rem, 3vw, 2rem);
+}
+.lightbox__count {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--sand);
+  font-weight: 600;
+}
+
+/* ============================================================
    DECISION BOARD
    ============================================================ */
 .board {

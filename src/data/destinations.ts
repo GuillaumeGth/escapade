@@ -31,8 +31,21 @@ export interface Destination {
   pros: string[]
   cons?: string
   scene: Scene
-  /** Optionnel : chemin d'une photo (ex. "/photos/madere.jpg"). Si absent, la scène dessinée s'affiche. */
+  /** Optionnel : photo « héros » affichée en fond parallax. Si absent, la scène dessinée s'affiche. */
   photo?: string
+  /** Optionnel : galerie de photos (chemins publics) affichée sous la destination. */
+  gallery?: string[]
+}
+
+/**
+ * Construit les chemins d'une galerie rangée dans `public/photos/<id>/`.
+ * Les fichiers sont nommés `<id>-01.jpg`, `<id>-02.jpg`, … (héros = 01).
+ */
+function gallery(id: string, count: number): string[] {
+  return Array.from(
+    { length: count },
+    (_, i) => `/photos/${id}/${id}-${String(i + 1).padStart(2, '0')}.jpg`,
+  )
 }
 
 export const destinations: Destination[] = [
@@ -72,6 +85,48 @@ export const destinations: Destination[] = [
       accent: '#1f6a66',
       water: '#2f8a86',
     },
+    photo: '/photos/madere/madere-01.jpg',
+    gallery: gallery('madere', 10),
+  },
+  {
+    id: 'acores',
+    name: 'Açores',
+    country: 'Portugal · Atlantique',
+    tagline: 'Un archipel volcanique perdu en plein Atlantique, vert émeraude et cratères noyés de lacs.',
+    intro:
+      "Neuf îles posées à mi-chemin de l'Amérique, où des cratères géants enferment des lacs bleus et verts, où l'on se baigne dans des sources chaudes et où les baleines passent au large. Une nature brute, humide et spectaculaire, encore loin des foules.",
+    flight: '≈ 4 h 00',
+    budget: 2,
+    budgetLabel: 'Modéré',
+    season: 'Mai → septembre',
+    seasonNote: 'Juin–septembre plus secs ; météo changeante toute l’année',
+    duration: '6–7 jours',
+    tags: ['Volcans', 'Lacs de cratère', 'Randonnée', 'Sources chaudes', 'Baleines'],
+    highlights: [
+      { title: 'Sete Cidades', desc: 'Deux lacs — un bleu, un vert — au fond d’un immense cratère, à São Miguel.' },
+      { title: 'Lagoa do Fogo', desc: 'Le « lac de feu », cratère sauvage classé réserve naturelle.' },
+      { title: 'Furnas', desc: 'Fumerolles et geysers, cozido cuit sous terre, jardins et bains thermaux.' },
+      { title: 'Pico', desc: 'Le plus haut sommet du Portugal (2 351 m) et ses vignes de lave classées UNESCO.' },
+      { title: 'Baleines & dauphins', desc: 'Observation au large parmi les meilleurs spots au monde.' },
+      { title: 'Flores', desc: 'L’île-jardin de l’ouest, falaises ruisselantes et cascades du Poço da Ribeira do Ferreiro.' },
+    ],
+    pros: [
+      'Nature volcanique spectaculaire et préservée',
+      'Sources chaudes et piscines naturelles',
+      'Sans décalage horaire, vol direct depuis Paris',
+      'Encore peu touristique, accueil chaleureux',
+    ],
+    cons: 'Météo très changeante (microclimats) ; prévoir plusieurs jours et une voiture.',
+    scene: {
+      kind: 'island',
+      sky: ['#74b1b0', '#d2e7da'],
+      land: '#27522f',
+      landBack: '#3f7444',
+      accent: '#1f7a6e',
+      water: '#2b8f8a',
+    },
+    photo: '/photos/acores/acores-01.jpg',
+    gallery: gallery('acores', 9),
   },
   {
     id: 'galice',
@@ -109,6 +164,8 @@ export const destinations: Destination[] = [
       accent: '#7a8a4f',
       water: '#5f7d76',
     },
+    photo: '/photos/galice/galice-01.jpg',
+    gallery: gallery('galice', 19),
   },
   {
     id: 'albanie',
@@ -147,6 +204,8 @@ export const destinations: Destination[] = [
       accent: '#e0b25a',
       water: '#1ec3c8',
     },
+    photo: '/photos/albanie/albanie-01.jpg',
+    gallery: gallery('albanie', 11),
   },
   {
     id: 'irlande',
@@ -185,5 +244,7 @@ export const destinations: Destination[] = [
       accent: '#6f7d3a',
       water: '#516a72',
     },
+    photo: '/photos/irlande/irlande-01.jpg',
+    gallery: gallery('irlande', 15),
   },
 ]

@@ -3,6 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion'
 import type { Destination } from '../data/destinations'
 import SceneArt from './SceneArt'
 import Reveal from './Reveal'
+import Gallery from './Gallery'
 
 interface Props {
   dest: Destination
@@ -133,6 +134,10 @@ export default function DestinationSection({ dest, index, loved, onToggleLove }:
           </div>
 
           {dest.cons ? <p className="cons-note">À garder en tête — {dest.cons}</p> : null}
+
+          {dest.gallery && dest.gallery.length > 0 ? (
+            <Gallery images={dest.gallery} name={dest.name} />
+          ) : null}
 
           <Reveal>
             <button
